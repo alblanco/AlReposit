@@ -5,6 +5,7 @@ This workflow gives the agent a machine-friendly wiring pipeline.
 ## Files
 - `wiring_netlist.schema.json` - canonical wiring format
 - `vision_to_netlist.py` - starter/stub for vision extraction output
+- `netlist_check.py` - rule-based electrical sanity checks (grounding, LED resistor, relay diode, voltage-mix heuristics)
 - `netlist_to_wokwi.py` - converts canonical netlist to `diagram.json`
 - `wokwi_validate.sh` - validates wiring diagram (lint if `wokwi-cli` exists)
 
@@ -16,12 +17,17 @@ LED + resistor on D13, plus a pushbutton on D2.
 python3 vision_to_netlist.py --out demo/simple.netlist.json
 ```
 
-### 2) Convert to Wokwi diagram
+### 2) Run electrical sanity checks
+```bash
+python3 netlist_check.py --in demo/simple.netlist.json --out demo/check-report.json
+```
+
+### 3) Convert to Wokwi diagram
 ```bash
 python3 netlist_to_wokwi.py --in demo/simple.netlist.json --out demo/diagram.json
 ```
 
-### 3) Validate diagram
+### 4) Validate diagram
 ```bash
 bash wokwi_validate.sh demo
 ```

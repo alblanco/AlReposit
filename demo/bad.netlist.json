@@ -1,0 +1,28 @@
+{
+  "version": "0.1",
+  "project": "bad-relay-example",
+  "board": { "id": "uno", "type": "wokwi-arduino-uno", "attrs": {} },
+  "parts": [
+    { "id": "relay1", "type": "wokwi-relay-module", "attrs": {} },
+    { "id": "led1", "type": "wokwi-led", "attrs": { "color": "red" } }
+  ],
+  "nets": [
+    {
+      "name": "CTRL",
+      "color": "green",
+      "pins": [
+        { "part": "uno", "pin": "7" },
+        { "part": "relay1", "pin": "IN" }
+      ]
+    },
+    {
+      "name": "VCC",
+      "color": "red",
+      "pins": [
+        { "part": "uno", "pin": "5V" },
+        { "part": "relay1", "pin": "VCC" },
+        { "part": "led1", "pin": "A" }
+      ]
+    }
+  ]
+}
