@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "author": "openclaw-agent",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "id": "uno",
+      "type": "wokwi-arduino-uno",
+      "left": 0,
+      "top": 0,
+      "attrs": {}
+    },
+    {
+      "id": "led1",
+      "type": "wokwi-led",
+      "left": 220,
+      "top": -20,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "id": "r1",
+      "type": "wokwi-resistor",
+      "left": 160,
+      "top": -20,
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "id": "btn1",
+      "type": "wokwi-pushbutton",
+      "left": 220,
+      "top": 100,
+      "attrs": {
+        "color": "black"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "uno:13",
+      "r1:1",
+      "green",
+      []
+    ],
+    [
+      "r1:2",
+      "led1:A",
+      "green",
+      []
+    ],
+    [
+      "uno:GND.1",
+      "led1:C",
+      "black",
+      []
+    ],
+    [
+      "led1:C",
+      "btn1:2.r",
+      "black",
+      []
+    ],
+    [
+      "uno:2",
+      "btn1:1.l",
+      "blue",
+      []
+    ]
+  ],
+  "serialMonitor": {
+    "display": "always",
+    "newline": "lf"
+  }
+}

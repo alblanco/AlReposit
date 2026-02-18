@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local/wiring_netlist.schema.json",
+  "title": "Wiring Netlist",
+  "type": "object",
+  "required": ["version", "project", "board", "parts", "nets"],
+  "properties": {
+    "version": { "type": "string" },
+    "project": { "type": "string" },
+    "board": {
+      "type": "object",
+      "required": ["id", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "attrs": { "type": "object", "additionalProperties": {"type": "string"} }
+      },
+      "additionalProperties": false
+    },
+    "parts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type"],
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "attrs": { "type": "object", "additionalProperties": {"type": "string"} }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "pins"],
+        "properties": {
+          "name": { "type": "string" },
+          "color": { "type": "string", "default": "green" },
+          "pins": {
+            "type": "array",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": ["part", "pin"],
+              "properties": {
+                "part": { "type": "string" },
+                "pin": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

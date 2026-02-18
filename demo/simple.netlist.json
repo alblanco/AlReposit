@@ -1,0 +1,94 @@
+{
+  "version": "0.1",
+  "project": "demo-led-button",
+  "board": {
+    "id": "uno",
+    "type": "wokwi-arduino-uno",
+    "attrs": {}
+  },
+  "parts": [
+    {
+      "id": "led1",
+      "type": "wokwi-led",
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "id": "r1",
+      "type": "wokwi-resistor",
+      "attrs": {
+        "value": "220"
+      }
+    },
+    {
+      "id": "btn1",
+      "type": "wokwi-pushbutton",
+      "attrs": {
+        "color": "black"
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "LED_DRIVE",
+      "color": "green",
+      "pins": [
+        {
+          "part": "uno",
+          "pin": "13"
+        },
+        {
+          "part": "r1",
+          "pin": "1"
+        }
+      ]
+    },
+    {
+      "name": "LED_CHAIN",
+      "color": "green",
+      "pins": [
+        {
+          "part": "r1",
+          "pin": "2"
+        },
+        {
+          "part": "led1",
+          "pin": "A"
+        }
+      ]
+    },
+    {
+      "name": "GND",
+      "color": "black",
+      "pins": [
+        {
+          "part": "uno",
+          "pin": "GND.1"
+        },
+        {
+          "part": "led1",
+          "pin": "C"
+        },
+        {
+          "part": "btn1",
+          "pin": "2.r"
+        }
+      ]
+    },
+    {
+      "name": "BUTTON_SIG",
+      "color": "blue",
+      "pins": [
+        {
+          "part": "uno",
+          "pin": "2"
+        },
+        {
+          "part": "btn1",
+          "pin": "1.l"
+        }
+      ]
+    }
+  ]
+}
