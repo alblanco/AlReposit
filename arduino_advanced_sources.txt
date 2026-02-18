@@ -1,0 +1,75 @@
+# Advanced Arduino docs, troubleshooting threads, and guides
+https://docs.arduino.cc/arduino-cli/sketch-build-process/
+https://docs.arduino.cc/hardware/uno-r4-wifi
+https://docs.arduino.cc/tutorials/uno-r4-minima/cheat-sheet
+https://docs.arduino.cc/tutorials/giga-r1-wifi/cheat-sheet
+
+# Arduino Forum (complex troubleshooting)
+https://forum.arduino.cc/t/arduino-failing-to-power-multiple-sensors/685104
+https://forum.arduino.cc/t/multiple-sensors-power/544811
+https://forum.arduino.cc/t/wiring-guidance-for-multiple-devices-and-sensors/1148391
+https://forum.arduino.cc/t/potential-overload-when-connecting-multiple-components-to-arduino-uno/1405329
+https://forum.arduino.cc/t/unexpected-reset-in-watering-lighting-system/913403
+https://forum.arduino.cc/t/is-there-brown-out-detection-for-arduino-uno/124777
+https://forum.arduino.cc/t/problem-with-esp32-wrover-brownout-detector/1171226
+https://forum.arduino.cc/t/what-sorts-of-thing-can-cause-an-atmega-328-to-reset-model-railway-problem/632192
+https://forum.arduino.cc/t/arduino-crash-when-relay-switch-off/877372?page=2
+https://forum.arduino.cc/t/problem-with-arduino-losing-power-due-reley-activation-and-not-working-until-reseting-flyback-diode/1423967?page=5
+https://forum.arduino.cc/t/problems-with-arduino-running-for-a-long-time-months/185032
+https://forum.arduino.cc/t/solved-atmega-crashes-with-battery-power-supply/158235
+https://forum.arduino.cc/t/tracking-down-an-elusive-memory-leak/690038
+https://forum.arduino.cc/t/solved-best-practices-for-debugging-memory-corruption-and-free-woes/142468
+https://forum.arduino.cc/t/async-web-server-becomes-unresponsive-after-1-4-days-of-use/1075879
+https://forum.arduino.cc/t/solved-crashing-after-several-hours-of-operation/591988
+https://forum.arduino.cc/t/using-non-blocking-delays-inside-state-machine/1102104
+https://forum.arduino.cc/t/using-millis-instead-of-delay-in-a-fsm/621986
+https://forum.arduino.cc/t/using-millis-for-timing-a-beginners-guide/483573
+https://forum.arduino.cc/t/a-demo-code-explaining-the-switch-case-state-machine-and-how-to-do-things-almost-in-parallel/888172
+https://forum.arduino.cc/t/simple-delays-non-blocking-timer-free/635670
+
+# Arduino Stack Exchange
+https://arduino.stackexchange.com/questions/65167/one-arduino-collects-data-several-other-arduinos-use-the-data-what-is-a-simple
+https://arduino.stackexchange.com/questions/65715/sharing-serial-output-from-one-to-many-arduinos-plus-a-computer-via-usb-hub
+https://arduino.stackexchange.com/questions/85873/bi-directional-uart-communication-on-single-data-wire-possible
+https://arduino.stackexchange.com/questions/48077/alternative-to-uart-i2c-lcd-displays
+https://arduino.stackexchange.com/questions/19832/what-is-the-best-serial-protocol-for-bidirectional-communication-with-nodemcu
+https://arduino.stackexchange.com/questions/84093/struggling-to-understand-how-bluetooth-serial-is-related-to-usb-on-arduino
+https://arduino.stackexchange.com/questions/24744/is-it-possible-to-receive-a-9-bit-protocol-on-the-arduino-uno-with-arduino
+https://arduino.stackexchange.com/questions/24723/two-wire-communication-i2c-between-arduino-micros
+https://arduino.stackexchange.com/questions/34903/how-to-properly-use-interruptions-with-twi-i2c
+
+# Electronics Stack Exchange (power/noise/grounding)
+https://electronics.stackexchange.com/questions/154428/linked-grounds-produce-noise-on-arduinos-5v-lines
+https://electronics.stackexchange.com/questions/484921/arduino-power-problem-when-using-boost-converter
+https://electronics.stackexchange.com/questions/557202/arduino-spuriously-resets-with-power-draw
+https://electronics.stackexchange.com/questions/368504/arduino-project-usbexternal-power-source-works-fine-no-usb-everything-goe
+https://electronics.stackexchange.com/questions/242569/mysterious-noise-issue-in-automotive-ignition-coil-application-arduino
+https://electronics.stackexchange.com/questions/445775/noise-problem-with-arduino-relay-motor-unit
+
+# Adafruit/SparkFun guides
+https://learn.adafruit.com/adafruit-neopixel-uberguide/best-practices
+https://learn.adafruit.com/adafruit-neopixel-uberguide/basic-connections
+https://learn.adafruit.com/adafruit-ina228-i2c-power-monitor/arduino
+https://learn.adafruit.com/adafruit-optical-fingerprint-sensor/wiring-for-use-with-arduino
+https://learn.adafruit.com/adafruit-bme680-humidity-temperature-barometic-pressure-voc-gas/arduino-wiring-test
+https://learn.sparkfun.com/tutorials/sparkfun-troubleshooting-tips/all
+https://learn.sparkfun.com/tutorials/processor-interrupts-with-arduino/all?print=1
+https://learn.sparkfun.com/tutorials/hobby-servo-tutorial/troubleshooting
+https://learn.sparkfun.com/tutorials/12v5v-power-supply-hookup-guide/all
+https://learn.sparkfun.com/tutorials/single-supply-logic-level-converter-hookup-guide/example-code
+
+# GitHub issues (real-world edge cases)
+https://github.com/jrowberg/i2cdevlib/issues/252
+https://github.com/esp8266/Arduino/issues/3156
+https://github.com/espressif/arduino-esp32/issues/1972
+https://github.com/arduino/ArduinoCore-avr/issues/437
+https://github.com/grbl/grbl/issues/976
+https://github.com/adafruit/DHT-sensor-library/issues/215
+https://github.com/grbl/grbl/issues/253
+https://github.com/esp8266/Arduino/issues/3588
+https://github.com/miguelbalboa/rfid/issues/101
+
+# Debug/watchdog resources
+https://arduino-esp8266.readthedocs.io/en/3.1.1/faq/a02-my-esp-crashes.html
+https://interrupt.memfault.com/blog/firmware-watchdog-best-practices
+https://www.baldengineer.com/millis-tutorial.html
