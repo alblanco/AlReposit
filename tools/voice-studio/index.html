@@ -75,6 +75,7 @@
   let audioBlob = null;
   let isRecording = false;
 
+  let heardSpeech = false;
   if (!SR) {
     sttSupport.textContent = 'Browser STT not supported here.';
   } else {
@@ -86,16 +87,31 @@
 
     sr.onresult = (event) => {
       let finalText = '';
+      let interimText = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) finalText += event.results[i][0].transcript + ' ';
+        const t = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += t + ' ';
+        else interimText += t;
       }
-      if (finalText) transcript.value = (transcript.value + ' ' + finalText).trim();
+      if (finalText.trim()) {
+        heardSpeech = true;
+        transcript.value = (transcript.value + ' ' + finalText).trim();
+      }
+      if (interimText.trim()) {
+        state.textContent = `Listening… ${interimText.trim()}`;
+      }
+    };
+
+    sr.onerror = (event) => {
+      state.textContent = `STT error: ${event.error}`;
+      autoHint.textContent = 'Check mic permission in browser site settings.';
     };
   }
 
   async function startPTT() {
     if (isRecording) return;
     isRecording = true;
+    heardSpeech = false;
     ptt.classList.add('recording');
     ptt.textContent = 'Recording... release to send';
     state.textContent = 'Listening...';
@@ -130,12 +146,20 @@
 
     ptt.classList.remove('recording');
     ptt.textContent = 'Hold to Talk';
+
+    const textNow = transcript.value.trim();
+    if (!heardSpeech && !textNow) {
+      state.textContent = 'No speech recognized.';
+      autoHint.textContent = 'If this repeats, allow microphone + speech recognition in Chrome site settings.';
+      return;
+    }
+
     state.innerHTML = '<span class="ok">Captured.</span> Transcript ready.';
 
     // Best effort: auto-copy transcript so paste-to-chat is one step
-    if (transcript.value.trim()) {
+    if (textNow) {
       try {
-        await navigator.clipboard.writeText(transcript.value.trim());
+        await navigator.clipboard.writeText(textNow);
         autoHint.textContent = 'Transcript copied. Paste into Bob chat and send.';
       } catch {
         autoHint.textContent = 'Transcript ready. Copy and paste into Bob chat.';
