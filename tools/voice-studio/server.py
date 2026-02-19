@@ -8,7 +8,7 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 
 ROOT = Path(__file__).resolve().parent
-WHISPER_MODEL = os.environ.get("BOB_WHISPER_MODEL", "tiny.en")
+WHISPER_MODEL = os.environ.get("BOB_WHISPER_MODEL", "base.en")
 WHISPER_THREADS = os.environ.get("BOB_WHISPER_THREADS", "2")
 WHISPER_TIMEOUT_SEC = int(os.environ.get("BOB_WHISPER_TIMEOUT_SEC", "30"))
 MAX_AUDIO_MB = int(os.environ.get("BOB_MAX_AUDIO_MB", "5"))
@@ -56,6 +56,9 @@ def transcribe():
                 str(in_file),
                 "--model", WHISPER_MODEL,
                 "--language", "en",
+                "--task", "transcribe",
+                "--temperature", "0",
+                "--condition_on_previous_text", "False",
                 "--output_format", "txt",
                 "--output_dir", str(out_dir),
                 "--threads", str(WHISPER_THREADS),

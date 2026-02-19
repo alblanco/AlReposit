@@ -165,8 +165,9 @@
         if (data.whisper_bin) autoHint.textContent = `whisper path: ${data.whisper_bin}`;
         return;
       }
-      transcript.value = [transcript.value.trim(), (data.text || '').trim()].filter(Boolean).join(' ');
-      state.textContent = 'Captured + transcribed.';
+      const t = (data.text || '').trim();
+      transcript.value = t;
+      state.textContent = t ? 'Captured + transcribed.' : 'No clear speech detected. Try speaking closer/louder for 2-4s.';
       if (transcript.value.trim()) {
         try {
           await navigator.clipboard.writeText(transcript.value.trim());
