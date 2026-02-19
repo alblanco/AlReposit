@@ -89,7 +89,7 @@
       mediaRecorder.stream.getTracks().forEach(t => t.stop());
       await transcribeBlob(audioBlob);
     };
-    mediaRecorder.start();
+    mediaRecorder.start(250); // timeslice helps some browsers flush chunks reliably
   }
 
   async function stopPTT() {
@@ -103,15 +103,19 @@
       try { mediaRecorder.requestData(); } catch {}
       setTimeout(() => {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-      }, 60);
+      }, 120);
 
       // watchdog in case onstop never fires in this browser/session
       setTimeout(async () => {
-        if (state.textContent === 'Processing...' && chunks.length) {
-          audioBlob = new Blob(chunks, { type: 'audio/webm' });
-          await transcribeBlob(audioBlob);
+        if (state.textContent === 'Processing...') {
+          if (chunks.length) {
+            audioBlob = new Blob(chunks, { type: 'audio/webm' });
+            await transcribeBlob(audioBlob);
+          } else {
+            state.textContent = 'No audio chunks received. Try click-to-start, click-to-stop.';
+          }
         }
-      }, 1200);
+      }, 1800);
     } else {
       state.textContent = 'Recorder not active. Tap and hold, then speak.';
     }
@@ -156,6 +160,7 @@
   // fallback toggle for devices/browsers where hold events are unreliable
   ptt.addEventListener('click', () => {
     if (isRecording) stopPTT();
+    else startPTT();
   });
 
   copyBtn.onclick = async () => {
