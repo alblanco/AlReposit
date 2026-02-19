@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -7,11 +8,12 @@ from flask import Flask, jsonify, request, send_from_directory
 
 ROOT = Path(__file__).resolve().parent
 WHISPER_MODEL = os.environ.get("BOB_WHISPER_MODEL", "turbo")
+WHISPER_BIN = os.environ.get("BOB_WHISPER_BIN") or shutil.which("whisper") or "/opt/homebrew/bin/whisper"
 app = Flask(__name__, static_folder=str(ROOT), static_url_path="")
 
 @app.get("/health")
 def health():
-    return jsonify({"ok": True, "model": WHISPER_MODEL})
+    return jsonify({"ok": True, "model": WHISPER_MODEL, "whisper_bin": WHISPER_BIN, "whisper_exists": Path(WHISPER_BIN).exists()})
 
 @app.post("/transcribe")
 def transcribe():
@@ -29,15 +31,20 @@ def transcribe():
         audio.save(str(in_file))
 
         cmd = [
-            "whisper", str(in_file),
+            WHISPER_BIN, str(in_file),
             "--model", WHISPER_MODEL,
             "--language", "en",
             "--output_format", "txt",
             "--output_dir", str(out_dir),
         ]
 
+        if not Path(WHISPER_BIN).exists():
+            return jsonify({"ok": False, "error": "whisper_not_found", "whisper_bin": WHISPER_BIN}), 500
+
         try:
             subprocess.run(cmd, check=True, capture_output=True, text=True)
+        except FileNotFoundError:
+            return jsonify({"ok": False, "error": "whisper_not_found", "whisper_bin": WHISPER_BIN}), 500
         except subprocess.CalledProcessError as e:
             return jsonify({
                 "ok": False,

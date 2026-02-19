@@ -100,9 +100,16 @@
       const fd = new FormData();
       fd.append('audio', blob, `clip-${Date.now()}.webm`);
       const res = await fetch('/transcribe', { method: 'POST', body: fd });
-      const data = await res.json();
+      const raw = await res.text();
+      let data = null;
+      try { data = JSON.parse(raw); } catch {
+        state.textContent = `Transcribe failed: non-JSON response (status ${res.status})`;
+        autoHint.textContent = raw.slice(0, 120);
+        return;
+      }
       if (!data.ok) {
         state.textContent = `Transcribe failed: ${data.error || 'unknown'}`;
+        if (data.whisper_bin) autoHint.textContent = `whisper path: ${data.whisper_bin}`;
         return;
       }
       transcript.value = [transcript.value.trim(), (data.text || '').trim()].filter(Boolean).join(' ');
