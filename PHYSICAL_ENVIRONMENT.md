@@ -52,6 +52,7 @@ Living document that describes the real-world setup (computer, devices, tools, m
 - USB cable quality is a recurring risk; data-capable cables are mandatory.
 - Board labeling can be misleading; chip probe output is authoritative.
 - Browser relay may intermittently fail and need `openclaw gateway restart`.
+- 2026-02-19: host experienced an unexpected crash/shutdown during voice tooling setup; root cause not yet determined.
 
 ---
 

@@ -16,11 +16,11 @@
   </style>
 </head>
 <body>
-  <h1>🎙️ Bob Voice Studio — Push to Talk</h1>
-  <p class="muted">Hold button → speak → release. Transcription runs locally via Whisper.</p>
+  <h1>🎙️ Bob Voice Studio — One Button Talk</h1>
+  <p class="muted">Click once to start speaking, click again to stop. Transcription runs locally via Whisper.</p>
 
   <div class="card">
-    <button id="ptt">Hold to Talk</button>
+    <button id="ptt">Start Talking</button>
     <div class="row" style="margin-top:10px;">
       <span id="state" class="muted">Idle</span>
       <span id="autoHint" class="muted"></span>
@@ -69,7 +69,7 @@
     if (isRecording) return;
     isRecording = true;
     ptt.classList.add('recording');
-    ptt.textContent = 'Recording... release to transcribe';
+    ptt.textContent = 'Stop Talking';
     state.textContent = 'Listening...';
     autoHint.textContent = '';
 
@@ -96,7 +96,7 @@
     if (!isRecording) return;
     isRecording = false;
     ptt.classList.remove('recording');
-    ptt.textContent = 'Hold to Talk';
+    ptt.textContent = 'Start Talking';
     state.textContent = 'Processing...';
 
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -125,7 +125,10 @@
     try {
       const fd = new FormData();
       fd.append('audio', blob, `clip-${Date.now()}.webm`);
-      const res = await fetch('/transcribe', { method: 'POST', body: fd });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 45000);
+      const res = await fetch('/transcribe', { method: 'POST', body: fd, signal: controller.signal });
+      clearTimeout(timeout);
       const raw = await res.text();
       let data = null;
       try { data = JSON.parse(raw); } catch {
@@ -149,15 +152,12 @@
         }
       }
     } catch (e) {
-      state.textContent = `Transcribe failed: ${e.message}`;
+      if (e.name === 'AbortError') state.textContent = 'Transcribe timed out (45s). Try a shorter clip.';
+      else state.textContent = `Transcribe failed: ${e.message}`;
     }
   }
 
-  ptt.addEventListener('pointerdown', startPTT);
-  ptt.addEventListener('pointerup', stopPTT);
-  ptt.addEventListener('pointerleave', () => { if (isRecording) stopPTT(); });
-  ptt.addEventListener('touchend', stopPTT);
-  // fallback toggle for devices/browsers where hold events are unreliable
+  // Primary control: single-button toggle (click once to start, click again to stop)
   ptt.addEventListener('click', () => {
     if (isRecording) stopPTT();
     else startPTT();
