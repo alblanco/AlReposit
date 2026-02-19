@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bob Voice Studio</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; margin: 24px; max-width: 900px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    button { padding: 10px 14px; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; }
+    button.primary { background: #111; color: #fff; }
+    textarea { width: 100%; min-height: 130px; padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
+    .card { border: 1px solid #e5e5e5; border-radius: 14px; padding: 14px; margin: 12px 0; }
+    .muted { color: #666; font-size: 14px; }
+    code { background: #f5f5f5; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>🎙️ Bob Voice Studio</h1>
+  <p class="muted">Push-to-talk + live transcript + audio export + local TTS playback.</p>
+
+  <div class="card">
+    <h3>1) Record your voice</h3>
+    <div class="row">
+      <button id="startRec" class="primary">Start Recording</button>
+      <button id="stopRec" disabled>Stop Recording</button>
+      <button id="downloadRec" disabled>Download Audio</button>
+      <span id="recStatus" class="muted">Idle</span>
+    </div>
+    <audio id="audioPlayer" controls style="width:100%;"></audio>
+  </div>
+
+  <div class="card">
+    <h3>2) Live speech-to-text (browser)</h3>
+    <div class="row">
+      <button id="startStt" class="primary">Start Dictation</button>
+      <button id="stopStt" disabled>Stop Dictation</button>
+      <button id="copyTxt">Copy</button>
+      <button id="clearTxt">Clear</button>
+      <span id="sttStatus" class="muted">Idle</span>
+    </div>
+    <textarea id="transcript" placeholder="Your transcript appears here..."></textarea>
+  </div>
+
+  <div class="card">
+    <h3>3) Hear Bob responses</h3>
+    <p class="muted">Paste Bob's text reply below and click speak.</p>
+    <div class="row">
+      <button id="speakBtn" class="primary">Speak</button>
+      <button id="stopSpeak">Stop</button>
+      <label class="muted">Rate <input id="rate" type="range" min="0.7" max="1.3" value="1" step="0.05"></label>
+    </div>
+    <textarea id="replyText" placeholder="Paste assistant response here..."></textarea>
+  </div>
+
+  <p class="muted">Tip: for best flow, paste transcript into OpenClaw chat, then paste Bob's answer back here and click <b>Speak</b>.</p>
+
+<script>
+  const startRec = document.getElementById('startRec');
+  const stopRec = document.getElementById('stopRec');
+  const downloadRec = document.getElementById('downloadRec');
+  const recStatus = document.getElementById('recStatus');
+  const audioPlayer = document.getElementById('audioPlayer');
+  let mediaRecorder, chunks = [], audioBlob;
+
+  startRec.onclick = async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    chunks = [];
+    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.onstop = () => {
+      audioBlob = new Blob(chunks, { type: 'audio/webm' });
+      audioPlayer.src = URL.createObjectURL(audioBlob);
+      downloadRec.disabled = false;
+      recStatus.textContent = 'Recorded';
+    };
+    mediaRecorder.start();
+    recStatus.textContent = 'Recording...';
+    startRec.disabled = true;
+    stopRec.disabled = false;
+  };
+
+  stopRec.onclick = () => {
+    mediaRecorder?.stop();
+    mediaRecorder?.stream?.getTracks().forEach(t => t.stop());
+    startRec.disabled = false;
+    stopRec.disabled = true;
+  };
+
+  downloadRec.onclick = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(audioBlob);
+    a.download = `bob-voice-${Date.now()}.webm`;
+    a.click();
+  };
+
+  // STT
+  const transcript = document.getElementById('transcript');
+  const sttStatus = document.getElementById('sttStatus');
+  const startStt = document.getElementById('startStt');
+  const stopStt = document.getElementById('stopStt');
+  const copyTxt = document.getElementById('copyTxt');
+  const clearTxt = document.getElementById('clearTxt');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let rec;
+
+  if (!SR) {
+    sttStatus.textContent = 'SpeechRecognition not supported in this browser';
+    startStt.disabled = true;
+  } else {
+    rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = 'en-US';
+    rec.onstart = () => {
+      sttStatus.textContent = 'Listening...';
+      startStt.disabled = true;
+      stopStt.disabled = false;
+    };
+    rec.onend = () => {
+      sttStatus.textContent = 'Idle';
+      startStt.disabled = false;
+      stopStt.disabled = true;
+    };
+    rec.onresult = (event) => {
+      let finalText = '';
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const t = event.results[i][0].transcript;
+        if (event.results[i].isFinal) finalText += t + ' ';
+        else interim += t;
+      }
+      if (finalText) transcript.value += finalText;
+    };
+    startStt.onclick = () => rec.start();
+    stopStt.onclick = () => rec.stop();
+  }
+
+  copyTxt.onclick = async () => { await navigator.clipboard.writeText(transcript.value); };
+  clearTxt.onclick = () => { transcript.value = ''; };
+
+  // TTS
+  const replyText = document.getElementById('replyText');
+  const speakBtn = document.getElementById('speakBtn');
+  const stopSpeak = document.getElementById('stopSpeak');
+  const rate = document.getElementById('rate');
+  speakBtn.onclick = () => {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(replyText.value || '');
+    u.rate = Number(rate.value);
+    speechSynthesis.speak(u);
+  };
+  stopSpeak.onclick = () => speechSynthesis.cancel();
+</script>
+</body>
+</html>
