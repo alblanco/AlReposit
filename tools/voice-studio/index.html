@@ -25,6 +25,10 @@
       <span id="state" class="muted">Idle</span>
       <span id="autoHint" class="muted"></span>
     </div>
+    <div class="row" style="margin-top:8px;">
+      <button id="forceStopBtn">Force Stop + Transcribe</button>
+      <span id="debug" class="muted">v3</span>
+    </div>
   </div>
 
   <div class="card">
@@ -59,11 +63,15 @@
   const speakBtn = document.getElementById('speakBtn');
   const stopSpeakBtn = document.getElementById('stopSpeakBtn');
   const rate = document.getElementById('rate');
+  const forceStopBtn = document.getElementById('forceStopBtn');
+  const debug = document.getElementById('debug');
 
   let mediaRecorder = null;
   let chunks = [];
   let audioBlob = null;
   let isRecording = false;
+
+  function dbg(msg) { debug.textContent = `v3 • ${msg}`; }
 
   async function startPTT() {
     if (isRecording) return;
@@ -75,21 +83,28 @@
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
+    dbg(`recorder=${mediaRecorder.state}`);
     chunks = [];
     mediaRecorder.ondataavailable = e => {
-      if (e.data && e.data.size > 0) chunks.push(e.data);
+      if (e.data && e.data.size > 0) {
+        chunks.push(e.data);
+        dbg(`chunks=${chunks.length}, last=${e.data.size}B`);
+      }
     };
     mediaRecorder.onstop = async () => {
       if (!chunks.length) {
         state.textContent = 'No audio captured. Try again and keep holding while speaking.';
+        dbg('onstop with zero chunks');
         return;
       }
       audioBlob = new Blob(chunks, { type: 'audio/webm' });
       downloadAudioBtn.disabled = false;
       mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      dbg(`onstop blob=${audioBlob.size}B`);
       await transcribeBlob(audioBlob);
     };
     mediaRecorder.start(250); // timeslice helps some browsers flush chunks reliably
+    dbg('recording started');
   }
 
   async function stopPTT() {
@@ -102,7 +117,10 @@
     if (mediaRecorder && mediaRecorder.state !== 'inactive') {
       try { mediaRecorder.requestData(); } catch {}
       setTimeout(() => {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          dbg('calling stop()');
+          mediaRecorder.stop();
+        }
       }, 120);
 
       // watchdog in case onstop never fires in this browser/session
@@ -110,9 +128,11 @@
         if (state.textContent === 'Processing...') {
           if (chunks.length) {
             audioBlob = new Blob(chunks, { type: 'audio/webm' });
+            dbg(`watchdog transcribe blob=${audioBlob.size}B`);
             await transcribeBlob(audioBlob);
           } else {
             state.textContent = 'No audio chunks received. Try click-to-start, click-to-stop.';
+            dbg('watchdog zero chunks');
           }
         }
       }, 1800);
@@ -129,6 +149,7 @@
       const timeout = setTimeout(() => controller.abort(), 45000);
       const res = await fetch('/transcribe', { method: 'POST', body: fd, signal: controller.signal });
       clearTimeout(timeout);
+      dbg(`POST /transcribe -> ${res.status}`);
       const raw = await res.text();
       let data = null;
       try { data = JSON.parse(raw); } catch {
@@ -161,6 +182,17 @@
   ptt.addEventListener('click', () => {
     if (isRecording) stopPTT();
     else startPTT();
+  });
+
+  forceStopBtn.addEventListener('click', async () => {
+    if (isRecording) await stopPTT();
+    else if (chunks.length) {
+      audioBlob = new Blob(chunks, { type: 'audio/webm' });
+      dbg(`manual transcribe blob=${audioBlob.size}B`);
+      await transcribeBlob(audioBlob);
+    } else {
+      state.textContent = 'Nothing to transcribe yet.';
+    }
   });
 
   copyBtn.onclick = async () => {
