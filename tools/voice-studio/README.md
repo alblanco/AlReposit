@@ -1,25 +1,25 @@
 # Bob Voice Studio
 
-Quick local voice interface for recording and playback.
+Push-to-talk voice interface using local Whisper transcription.
 
-## Run
-
-From workspace root:
+## Start
 
 ```bash
 cd tools/voice-studio
-python3 -m http.server 8787
+source .venv/bin/activate
+python server.py
 ```
 
 Open: <http://127.0.0.1:8787>
 
 ## Features
-- Record mic audio and download it
-- Live browser speech-to-text dictation (when supported)
-- Paste Bob text replies and play with browser TTS
+- Hold-to-talk recording
+- Auto transcription via local Whisper (`/transcribe`)
+- Transcript auto-copied for quick paste into Bob chat
+- Browser TTS playback for Bob responses
 
-## Notes
-- Works best in Chrome-based browsers.
-- Browser STT/TTS quality depends on OS/browser voices.
-- For higher accuracy transcription, use local Whisper script:
-  - `scripts/transcribe.sh <audio-file>`
+## Health check
+
+```bash
+curl http://127.0.0.1:8787/health
+```

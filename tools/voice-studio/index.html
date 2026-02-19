@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bob Voice Studio (PTT)</title>
+  <title>Bob Voice Studio (PTT + Whisper)</title>
   <style>
     body { font-family: -apple-system, system-ui, sans-serif; margin: 24px; max-width: 860px; }
     .card { border: 1px solid #e8e8e8; border-radius: 14px; padding: 14px; margin: 14px 0; }
@@ -11,34 +11,29 @@
     textarea { width: 100%; min-height: 130px; padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
     .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     button { padding: 10px 14px; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; }
-    #ptt {
-      width: 100%; padding: 18px; border-radius: 14px; font-size: 18px; font-weight: 700;
-      background: #111; color: #fff; border: none;
-    }
+    #ptt { width: 100%; padding: 18px; border-radius: 14px; font-size: 18px; font-weight: 700; background: #111; color: #fff; border: none; }
     #ptt.recording { background: #b00020; }
-    .ok { color: #0a7f2e; }
   </style>
 </head>
 <body>
   <h1>🎙️ Bob Voice Studio — Push to Talk</h1>
-  <p class="muted">No wake word. Hold button → speak → release to stop. Transcript is prepared automatically.</p>
+  <p class="muted">Hold button → speak → release. Transcription runs locally via Whisper.</p>
 
   <div class="card">
     <button id="ptt">Hold to Talk</button>
     <div class="row" style="margin-top:10px;">
       <span id="state" class="muted">Idle</span>
-      <span id="sttSupport" class="muted"></span>
+      <span id="autoHint" class="muted"></span>
     </div>
   </div>
 
   <div class="card">
-    <h3>Transcript (auto-filled on release)</h3>
-    <textarea id="transcript" placeholder="Your words appear here..."></textarea>
+    <h3>Transcript</h3>
+    <textarea id="transcript" placeholder="Transcript appears here..."></textarea>
     <div class="row" style="margin-top:10px;">
       <button id="copyBtn">Copy Transcript</button>
       <button id="clearBtn">Clear</button>
       <button id="downloadAudioBtn" disabled>Download Last Audio</button>
-      <span id="autoHint" class="muted"></span>
     </div>
   </div>
 
@@ -55,65 +50,26 @@
 <script>
   const ptt = document.getElementById('ptt');
   const state = document.getElementById('state');
-  const sttSupport = document.getElementById('sttSupport');
   const transcript = document.getElementById('transcript');
   const autoHint = document.getElementById('autoHint');
   const downloadAudioBtn = document.getElementById('downloadAudioBtn');
-
   const copyBtn = document.getElementById('copyBtn');
   const clearBtn = document.getElementById('clearBtn');
-
   const reply = document.getElementById('reply');
   const speakBtn = document.getElementById('speakBtn');
   const stopSpeakBtn = document.getElementById('stopSpeakBtn');
   const rate = document.getElementById('rate');
 
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  let sr = null;
   let mediaRecorder = null;
   let chunks = [];
   let audioBlob = null;
   let isRecording = false;
 
-  let heardSpeech = false;
-  if (!SR) {
-    sttSupport.textContent = 'Browser STT not supported here.';
-  } else {
-    sttSupport.textContent = 'Browser STT ready.';
-    sr = new SR();
-    sr.continuous = true;
-    sr.interimResults = true;
-    sr.lang = 'en-US';
-
-    sr.onresult = (event) => {
-      let finalText = '';
-      let interimText = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const t = event.results[i][0].transcript;
-        if (event.results[i].isFinal) finalText += t + ' ';
-        else interimText += t;
-      }
-      if (finalText.trim()) {
-        heardSpeech = true;
-        transcript.value = (transcript.value + ' ' + finalText).trim();
-      }
-      if (interimText.trim()) {
-        state.textContent = `Listening… ${interimText.trim()}`;
-      }
-    };
-
-    sr.onerror = (event) => {
-      state.textContent = `STT error: ${event.error}`;
-      autoHint.textContent = 'Check mic permission in browser site settings.';
-    };
-  }
-
   async function startPTT() {
     if (isRecording) return;
     isRecording = true;
-    heardSpeech = false;
     ptt.classList.add('recording');
-    ptt.textContent = 'Recording... release to send';
+    ptt.textContent = 'Recording... release to transcribe';
     state.textContent = 'Listening...';
     autoHint.textContent = '';
 
@@ -121,49 +77,46 @@
     mediaRecorder = new MediaRecorder(stream);
     chunks = [];
     mediaRecorder.ondataavailable = e => chunks.push(e.data);
-    mediaRecorder.onstop = () => {
+    mediaRecorder.onstop = async () => {
       audioBlob = new Blob(chunks, { type: 'audio/webm' });
       downloadAudioBtn.disabled = false;
       mediaRecorder.stream.getTracks().forEach(t => t.stop());
+      await transcribeBlob(audioBlob);
     };
     mediaRecorder.start();
-
-    if (sr) {
-      try { sr.start(); } catch {}
-    }
   }
 
   async function stopPTT() {
     if (!isRecording) return;
     isRecording = false;
-
-    if (sr) {
-      try { sr.stop(); } catch {}
-    }
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
-    }
-
     ptt.classList.remove('recording');
     ptt.textContent = 'Hold to Talk';
+    state.textContent = 'Processing...';
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  }
 
-    const textNow = transcript.value.trim();
-    if (!heardSpeech && !textNow) {
-      state.textContent = 'No speech recognized.';
-      autoHint.textContent = 'If this repeats, allow microphone + speech recognition in Chrome site settings.';
-      return;
-    }
-
-    state.innerHTML = '<span class="ok">Captured.</span> Transcript ready.';
-
-    // Best effort: auto-copy transcript so paste-to-chat is one step
-    if (textNow) {
-      try {
-        await navigator.clipboard.writeText(textNow);
-        autoHint.textContent = 'Transcript copied. Paste into Bob chat and send.';
-      } catch {
-        autoHint.textContent = 'Transcript ready. Copy and paste into Bob chat.';
+  async function transcribeBlob(blob) {
+    try {
+      const fd = new FormData();
+      fd.append('audio', blob, `clip-${Date.now()}.webm`);
+      const res = await fetch('/transcribe', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (!data.ok) {
+        state.textContent = `Transcribe failed: ${data.error || 'unknown'}`;
+        return;
       }
+      transcript.value = [transcript.value.trim(), (data.text || '').trim()].filter(Boolean).join(' ');
+      state.textContent = 'Captured + transcribed.';
+      if (transcript.value.trim()) {
+        try {
+          await navigator.clipboard.writeText(transcript.value.trim());
+          autoHint.textContent = 'Transcript copied. Paste into Bob chat and send.';
+        } catch {
+          autoHint.textContent = 'Transcript ready.';
+        }
+      }
+    } catch (e) {
+      state.textContent = `Transcribe failed: ${e.message}`;
     }
   }
 
