@@ -2,15 +2,14 @@
 
 Push-to-talk voice interface using local Whisper transcription.
 
-## Start
+## Start (safe profile)
 
 ```bash
 cd tools/voice-studio
-source .venv/bin/activate
-python server.py
+./start_safe.sh
 ```
 
-Open: <http://127.0.0.1:8787>
+Open: <http://127.0.0.1:8790>
 
 ## Features
 - Hold-to-talk recording

@@ -158,7 +158,10 @@
         return;
       }
       if (!data.ok) {
-        state.textContent = `Transcribe failed: ${data.error || 'unknown'}`;
+        if (data.error === 'busy_transcribing') state.textContent = 'Server busy. Wait a moment and retry.';
+        else if (data.error === 'whisper_timeout') state.textContent = 'Transcribe timeout. Use a shorter clip (2-4s).';
+        else if (data.error === 'audio_too_large') state.textContent = 'Audio too large. Keep clips short.';
+        else state.textContent = `Transcribe failed: ${data.error || 'unknown'}`;
         if (data.whisper_bin) autoHint.textContent = `whisper path: ${data.whisper_bin}`;
         return;
       }
