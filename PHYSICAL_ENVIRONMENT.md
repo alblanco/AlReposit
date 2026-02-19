@@ -104,3 +104,4 @@ Living document that describes the real-world setup (computer, devices, tools, m
 - Keep this file practical and factual.
 - Record only verified observations.
 - For each new hardware session, append date + what changed.
+- Use `HARDWARE_SESSION_TEMPLATE.md` for consistent run logs.

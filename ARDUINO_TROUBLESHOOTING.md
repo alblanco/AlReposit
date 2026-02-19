@@ -129,3 +129,6 @@ arduino-cli upload -p /dev/cu.usbserial-0001 --fqbn esp8266:esp8266:nodemcuv2 <s
 - Add board-ID playbook (ESP32 DevKit vs NodeMCU vs clones by USB VID/PID).
 - Add serial-monitor helper scripts for macOS.
 - Add Wokwi-to-hardware “minimum reproducible test” templates.
+
+## Session Logging
+Use `HARDWARE_SESSION_TEMPLATE.md` after each physical run and append finalized notes to this KB.
