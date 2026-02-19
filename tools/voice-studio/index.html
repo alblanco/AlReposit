@@ -76,8 +76,14 @@
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream);
     chunks = [];
-    mediaRecorder.ondataavailable = e => chunks.push(e.data);
+    mediaRecorder.ondataavailable = e => {
+      if (e.data && e.data.size > 0) chunks.push(e.data);
+    };
     mediaRecorder.onstop = async () => {
+      if (!chunks.length) {
+        state.textContent = 'No audio captured. Try again and keep holding while speaking.';
+        return;
+      }
       audioBlob = new Blob(chunks, { type: 'audio/webm' });
       downloadAudioBtn.disabled = false;
       mediaRecorder.stream.getTracks().forEach(t => t.stop());
@@ -92,7 +98,23 @@
     ptt.classList.remove('recording');
     ptt.textContent = 'Hold to Talk';
     state.textContent = 'Processing...';
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      try { mediaRecorder.requestData(); } catch {}
+      setTimeout(() => {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+      }, 60);
+
+      // watchdog in case onstop never fires in this browser/session
+      setTimeout(async () => {
+        if (state.textContent === 'Processing...' && chunks.length) {
+          audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          await transcribeBlob(audioBlob);
+        }
+      }, 1200);
+    } else {
+      state.textContent = 'Recorder not active. Tap and hold, then speak.';
+    }
   }
 
   async function transcribeBlob(blob) {
@@ -131,6 +153,10 @@
   ptt.addEventListener('pointerup', stopPTT);
   ptt.addEventListener('pointerleave', () => { if (isRecording) stopPTT(); });
   ptt.addEventListener('touchend', stopPTT);
+  // fallback toggle for devices/browsers where hold events are unreliable
+  ptt.addEventListener('click', () => {
+    if (isRecording) stopPTT();
+  });
 
   copyBtn.onclick = async () => {
     await navigator.clipboard.writeText(transcript.value || '');
