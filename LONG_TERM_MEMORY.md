@@ -11,6 +11,7 @@ Long-term, persistent memory for OpenClaw. This file stores indexed information 
 - Key workspace context (paths, scripts, conventions)
 - Security, hooks, and logging summaries
 - Input/output scratch directory for file exchange between user and OpenClaw: **/Users/albertoblanco/Documents/Claw_workspace** (now referenced as **CW**)
+- GitHub backup: All WKB/project files are routinely pushed to https://github.com/alblanco/AlReposit for long-term versioned retention.
 - How to use the system: See BOOTSTRAP.md for workflow guide, ENVIRONMENT_SETUP.md for base setup, and TASKS.md for global coordination.
 
 ## Last Updated: 2026-02-20
@@ -23,3 +24,5 @@ Long-term, persistent memory for OpenClaw. This file stores indexed information 
 
 ## Aliases
 - **CW**: /Users/albertoblanco/Documents/Claw_workspace — use as user/output scratch directory for all file exchange
+- **WKB**: "Workspace Knowledge Bases" — the collection of all .md project/config files under version control and GitHub backup
+- **GitHub Repo**: https://github.com/alblanco/AlReposit (main backup for all WKB context)
