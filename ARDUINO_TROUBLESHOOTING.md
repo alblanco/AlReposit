@@ -75,6 +75,7 @@ Capture practical notes from real sessions: known problems, fast diagnostics, an
 **Result (this session)**
 - Board on `/dev/cu.usbserial-0001` was ESP8266-class.
 - Successful upload using `esp8266:esp8266:nodemcuv2`.
+- 2026-02-19: Initial flashing confusion due to board labeled ESP32 but detected as ESP8266, resolved by target FQBN switch.
 
 ---
 

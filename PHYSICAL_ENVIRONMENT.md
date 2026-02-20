@@ -53,6 +53,7 @@ Living document that describes the real-world setup (computer, devices, tools, m
 - Board labeling can be misleading; chip probe output is authoritative.
 - Browser relay may intermittently fail and need `openclaw gateway restart`.
 - 2026-02-19: host experienced an unexpected crash/shutdown during voice tooling setup; root cause not yet determined.
+- 2026-02-19: Voice workflow experiments in progress alongside agent orchestration and OpenRouter configuration trials.
 
 ---
 

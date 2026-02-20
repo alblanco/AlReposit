@@ -1,0 +1,17 @@
+# Ignore system files, local configs, and sensitive data
+.DS_Store
+__pycache__/
+memory/
+*.pyc
+*.sqlite
+*.log
+/private/
+# Ignore temp audio files
+tools/voice-studio/*.wav
+*.mp3
+*.wav
+*.m4a
+# Ignore OpenClaw runtime directories
+.openclaw/
+
+# Do NOT ignore .md project/WKB files, config scripts, or source code!
