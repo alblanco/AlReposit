@@ -52,7 +52,16 @@ Al is currently interested in MCP servers/integrations for:
 ## TubeScribe / YouTube transcript defaults (Al preference)
 - Default output: **Markdown transcript** (not DOCX)
 - Default behavior: **no audio generation** unless Al explicitly asks
-- Config file: `~/.tubescribe/config.json` (set `document.format=md`, `audio.enabled=false`)
+- Config file: `~/.tubescribe/config.json` (set `document.format=md`, `audio.enabled=false`, `output.folder=CW`)
+
+## Supabase (multi-project plan)
+- Connection method: Supabase hosted MCP (`https://mcp.supabase.com/mcp`) via mcporter.
+- Config: `workspace/config/mcporter.json`
+  - `supabase` (read-only) and `supabase_rw` (write-enabled) are set up for project `zltnvngpyxflgplwbjji`.
+- Token lives in `~/.openclaw/openclaw.json` env as `SUPABASE_ACCESS_TOKEN` (do not paste in chat).
+
+## Embeddings default (vector DB)
+- Default embedding model: **OpenAI `text-embedding-3-small`** (1536 dims).
 
 ## Last Updated: 2026-02-22
 

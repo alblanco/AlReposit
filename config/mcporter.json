@@ -8,6 +8,12 @@
       "headers": {
         "authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
       }
+    },
+    "supabase_rw": {
+      "baseUrl": "https://mcp.supabase.com/mcp?project_ref=zltnvngpyxflgplwbjji",
+      "headers": {
+        "authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
+      }
     }
   },
   "imports": []

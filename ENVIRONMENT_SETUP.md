@@ -38,12 +38,16 @@ Always begin new sessions by scanning this file and TASKS.md. Add notes here for
   - `audio.enabled=false`
   - `output.folder=CW`
 
-### Supabase (planned) — MCP connector
+### Supabase — MCP connector (multi-project ready)
 - Most reliable path: **Supabase hosted MCP server** (`https://mcp.supabase.com/mcp`) via **mcporter**.
-- Config lives in: `workspace/config/mcporter.json` as server `supabase`.
-- Auth: set `SUPABASE_ACCESS_TOKEN` (a Supabase Personal Access Token) in the environment so mcporter can send:
-  - `Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}`
-- Optional hardening (recommended once project chosen): add `project_ref=<ref>` and `read_only=true` to the baseUrl.
+- Config lives in: `workspace/config/mcporter.json`
+  - `supabase` → scoped to project `zltnvngpyxflgplwbjji` and **read-only** (default safe mode)
+  - `supabase_rw` → same project, **write-enabled** (use intentionally)
+- Auth: `SUPABASE_ACCESS_TOKEN` is stored in `~/.openclaw/openclaw.json` under `env` and must also be present in your shell env when running `mcporter` manually.
+- Future multi-DB plan (not built yet): use additional Supabase projects for separate concerns (general DB, vector DB, auth/website). Add additional mcporter server entries (e.g. `supabase_main`, `supabase_vector`, `supabase_auth`) each with its own `project_ref`.
+
+### Embeddings default (vector work)
+- Use **OpenAI `text-embedding-3-small`** (1536 dimensions) as the default embedding model for vector DB ingestion.
 
 ### Git backups
 - Workspace repo has GitHub remote: `https://github.com/alblanco/AlReposit.git`
