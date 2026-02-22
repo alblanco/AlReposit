@@ -15,7 +15,12 @@ Things like:
 
 ## Examples
 
+### CW (Claw_workspace) output rule (Al)
+- **All user-facing output files go in:** `/Users/albertoblanco/Documents/Claw_workspace` ("CW")
+- Do not write outputs anywhere else unless Al explicitly approves (ask first)
+
 ### TubeScribe defaults (Al)
+- Output folder: **CW**
 - Save transcripts as **Markdown** by default (not DOCX)
 - Do **not** generate audio unless explicitly requested
 

@@ -11,6 +11,10 @@ Long-term, persistent memory for OpenClaw. This file stores indexed information 
 - Key workspace context (paths, scripts, conventions)
 - Security, hooks, and logging summaries
 - Input/output scratch directory for file exchange between user and OpenClaw: **/Users/albertoblanco/Documents/Claw_workspace** (now referenced as **CW**)
+- **CW output rule (Al):** For any user-facing output files (transcripts, exports, reports, images, etc.), write to **CW only**. Do not write to other directories unless:
+  1) it’s required internal temp/setup state for a tool/skill, or
+  2) Al explicitly approves an override.
+  When an override would be helpful/required, ask first.
 - GitHub backup: All WKB/project files are routinely pushed to https://github.com/alblanco/AlReposit
 - SerpAPI search enabled via config/serpapi.env
 - **Brave Search API enabled via config/brave.env (key: BSAKJ1H5uS5RbnaldlGeUtQBYK0gu6B) for external skill/service discovery.**
