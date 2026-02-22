@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "serpapi": {
+      "baseUrl": "https://mcp.serpapi.com/033fa0171eb89b2e8f9d98ff712d936b5a06e9c1e8b61b534f2d1bcd47906673/mcp"
+    },
+    "supabase": {
+      "baseUrl": "https://mcp.supabase.com/mcp",
+      "headers": {
+        "authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
+      }
+    }
+  },
+  "imports": []
+}

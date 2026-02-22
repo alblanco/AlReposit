@@ -38,6 +38,13 @@ Always begin new sessions by scanning this file and TASKS.md. Add notes here for
   - `audio.enabled=false`
   - `output.folder=CW`
 
+### Supabase (planned) — MCP connector
+- Most reliable path: **Supabase hosted MCP server** (`https://mcp.supabase.com/mcp`) via **mcporter**.
+- Config lives in: `workspace/config/mcporter.json` as server `supabase`.
+- Auth: set `SUPABASE_ACCESS_TOKEN` (a Supabase Personal Access Token) in the environment so mcporter can send:
+  - `Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}`
+- Optional hardening (recommended once project chosen): add `project_ref=<ref>` and `read_only=true` to the baseUrl.
+
 ### Git backups
 - Workspace repo has GitHub remote: `https://github.com/alblanco/AlReposit.git`
 - Daily auto-push cron is configured: `daily-git-push` (6pm America/New_York)
