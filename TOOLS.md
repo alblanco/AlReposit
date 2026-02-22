@@ -15,6 +15,10 @@ Things like:
 
 ## Examples
 
+### TubeScribe defaults (Al)
+- Save transcripts as **Markdown** by default (not DOCX)
+- Do **not** generate audio unless explicitly requested
+
 ```markdown
 ### Cameras
 

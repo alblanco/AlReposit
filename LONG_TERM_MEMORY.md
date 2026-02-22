@@ -45,6 +45,11 @@ Al is currently interested in MCP servers/integrations for:
 - Google Drive
 - Google Sheets
 
+## TubeScribe / YouTube transcript defaults (Al preference)
+- Default output: **Markdown transcript** (not DOCX)
+- Default behavior: **no audio generation** unless Al explicitly asks
+- Config file: `~/.tubescribe/config.json` (set `document.format=md`, `audio.enabled=false`)
+
 ## Last Updated: 2026-02-22
 
 **To onboard or resume work:**
