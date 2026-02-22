@@ -7,6 +7,7 @@ _Learn about the person you're helping. Update this as you go._
 - **Pronouns:** He/Him
 - **Timezone:** America/New_York
 - **Notes:**
+  - Communication: dyslexia + frequent typos/bad spelling; expect letter reversals/mixed-up words in prompts; prioritize intent over exact spelling.
   - LinkedIn: https://www.linkedin.com/in/blancostrategy/
   - Location (LinkedIn): Raleigh–Durham–Chapel Hill Area
   - Current org (LinkedIn): Illuminix Inc
